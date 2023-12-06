@@ -51,7 +51,7 @@ class Renderer
         }
         //union de variables de sessión
         $datos = array_merge($_SESSION, $datos);
-        if (isset($datos["layoutFile"]) && $layoutFile === "layout.view.tpl") {
+        if (isset($datos["layoutFile"])) {
             $layoutFile = $datos["layoutFile"];
         }
         if (strpos($layoutFile, ".view.tpl") === false) {
@@ -466,3 +466,5 @@ class Renderer
 
     }
 }
+
+?>

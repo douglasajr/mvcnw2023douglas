@@ -1,3 +1,8 @@
+
+<center>
+
 <form action="index.php?page=checkout_checkout" method="post">
-  <button type="submit">Place Order</button>
+  
+  <button class="bg-dark text-info btn btn-lg border-info" type="submit">Confirmar Compra</button>
 </form>
+</center>

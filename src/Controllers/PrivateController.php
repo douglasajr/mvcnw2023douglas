@@ -26,8 +26,7 @@ abstract class PrivateController extends PublicController
     {
         $isAuthorized = \Utilities\Security::isAuthorized(
             \Utilities\Security::getUserId(),
-            $this->name,
-            'CTR'
+            $this->name
         );
         if (!$isAuthorized){
             throw new PrivateNoAuthException();
@@ -54,3 +53,5 @@ abstract class PrivateController extends PublicController
 
     }
 }
+
+?>

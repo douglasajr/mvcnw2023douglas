@@ -2,8 +2,6 @@
 
 namespace Utilities;
 
-use ReflectionClass;
-
 abstract class Enum
 {
     const NONE = null;
@@ -23,13 +21,16 @@ abstract class Enum
     {
         $unFormated = (new ReflectionClass(static::class))->getConstants();
         $formated = array();
-        foreach ($unFormated as $key => $value) {
+        foreach($unFormated as $key => $value) {
             $formated[] = array("code" => $key, "value" => $value);
         }
         return $formated;
     }
+
     final public static function isValid($value)
     {
         return in_array($value, static::toArray());
     }
 }
+
+?>

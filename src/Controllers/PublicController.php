@@ -29,7 +29,6 @@ abstract class PublicController implements IController
     public function __construct()
     {
         $this->name = get_class($this);
-        \Utilities\Nav::setPublicNavContext();
         if (\Utilities\Security::isLogged()){
             $layoutFile = \Utilities\Context::getContextByKey("PRIVATE_LAYOUT");
             if ($layoutFile !== "") {
@@ -61,3 +60,5 @@ abstract class PublicController implements IController
     }
 
 }
+
+?>

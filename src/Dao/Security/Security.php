@@ -47,7 +47,7 @@ class Security extends \Dao\Table
         return self::obtenerRegistros($sqlstr, array());
     }
 
-    static public function newUsuario($email, $password)
+    static public function newUsuario($email, $password,$username)
     {
         if (!\Utilities\Validators::IsValidEmail($email)) {
             throw new Exception("Correo no es válido");
@@ -65,7 +65,7 @@ class Security extends \Dao\Table
         unset($newUser["userpswdchg"]);
 
         $newUser["useremail"] = $email;
-        $newUser["username"] = "John Doe";
+        $newUser["username"] = $username;
         $newUser["userpswd"] = $hashedPassword;
         $newUser["userpswdest"] = Estados::ACTIVO;
         $newUser["userpswdexp"] = date('Y-m-d', time() + 7776000);  //(3*30*24*60*60) (m d h mi s)
@@ -82,6 +82,22 @@ class Security extends \Dao\Table
             now(), :usertipo);";
 
         return self::executeNonQuery($sqlIns, $newUser);
+
+    }
+
+    
+    static public function createRol($UserId){
+        
+        $newusuarioRol = self::_roleStruct();
+        
+        $newusuarioRol["usercod"] = $UserId;
+        $newusuarioRol["rolescod"] = UsuarioTipo::PUBLICO;
+        $newusuarioRol["roleuserest"] = Estados::ACTIVO;
+        $newusuarioRol["roleuserfch"] = date('Y-m-d', time());
+        $newusuarioRol["roleuserexp"] = date('Y-m-d', time() + 77776000);
+
+        $sqlIns2 = "insert into roles_usuarios (`usercod` , `rolescod`, `rolesuserest`, `rolesuserfch`, `rolesuserexp`) VALUES( :usercod, :rolescod, :roleuserest, :roleuserfch, :roleuserexp)";        
+        return self::executeNonQuery($sqlIns2, $newusuarioRol);
 
     }
 
@@ -133,6 +149,17 @@ class Security extends \Dao\Table
         );
     }
 
+    static private function _roleStruct()
+    {
+        return array(
+            "usercod"      => "",
+            "rolescod"    => "",
+            "roleuserest"     => "",
+            "roleuserfch"     => "",
+            "roleuserexp"   => "",
+        );
+    }
+
     static public function getFeature($fncod)
     {
         $sqlstr = "SELECT * from funciones where fncod=:fncod;";
@@ -160,7 +187,7 @@ class Security extends \Dao\Table
     {
         $sqlstr = "select * from
         funciones_roles a inner join roles_usuarios b on a.rolescod = b.rolescod
-        where a.fnrolest = 'ACT' and b.roleuserest='ACT' and b.usercod=:usercod
+        where a.fnrolest = 'ACT' and b.rolesuserest='ACT' and b.usercod=:usercod
         and a.fncod=:fncod limit 1;";
         $resultados = self::obtenerRegistros(
             $sqlstr,
@@ -225,7 +252,7 @@ class Security extends \Dao\Table
 
     static public function removeRolFromUser($userCod, $rolescod)
     {
-        $sqldel = "UPDATE roles_usuarios set roleuserest='INA' 
+        $sqldel = "UPDATE roles_usuarios set rolesuserest='INA' 
         where rolescod=:rolescod and usercod=:usercod;";
         return self::executeNonQuery(
             $sqldel,
@@ -235,7 +262,7 @@ class Security extends \Dao\Table
 
     static public function removeFeatureFromRol($fncod, $rolescod)
     {
-        $sqldel = "UPDATE funciones_roles set roleuserest='INA'
+        $sqldel = "UPDATE funciones_roles set rolesuserest='INA'
         where fncod=:fncod and rolescod=:rolescod;";
         return self::executeNonQuery(
             $sqldel,

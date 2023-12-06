@@ -73,7 +73,9 @@ class PayPalOrder
         $this->_request->body = $this->_body;
         $paypalClient = \Utilities\Paypal\PayPalClient::client();
         $response = $paypalClient->execute($this->_request);
-        return array($response->result->links[1], $response);
+        return $response;
+        
+        //return array($response->result->links[1], $response);
     }
     public function addItem($name, $description, $sku, $price, $tax, $quantity, $category)
     {

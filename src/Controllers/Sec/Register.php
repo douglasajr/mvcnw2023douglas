@@ -5,12 +5,15 @@ namespace Controllers\Sec;
 use Controllers\PublicController;
 use \Utilities\Validators;
 use Exception;
+use \Dao\Security\Security as Seguridad;
 
 class Register extends PublicController
 {
     private $txtEmail = "";
+    private $username = "";    
     private $txtPswd = "";
     private $errorEmail ="";
+    private $userId ="";
     private $errorPswd = "";
     private $hasErrors = false;
     public function run() :void
@@ -19,6 +22,7 @@ class Register extends PublicController
         if ($this->isPostBack()) {
             $this->txtEmail = $_POST["txtEmail"];
             $this->txtPswd = $_POST["txtPswd"];
+            $this->username = $_POST["username"];
             //validaciones
             if (!(Validators::IsValidEmail($this->txtEmail))) {
                 $this->errorEmail = "El correo no tiene el formato adecuado";
@@ -27,20 +31,23 @@ class Register extends PublicController
             if (!Validators::IsValidPassword($this->txtPswd)) {
                 $this->errorPswd = "La contraseña debe tener al menos 8 caracteres una mayúscula, un número y un caracter especial.";
                 $this->hasErrors = true;
-            }
+            }   
 
             if (!$this->hasErrors) {
                 try{
-                    if (\Dao\Security\Security::newUsuario($this->txtEmail, $this->txtPswd)) {
+                    
+                    if (\Dao\Security\Security::newUsuario($this->txtEmail, $this->txtPswd,$this->username)) {
+                        $this->userId = Seguridad::getUsuarioByEmail($this->txtEmail);
+                         Seguridad::createRol($this->userId["usercod"]);
                         \Utilities\Site::redirectToWithMsg("index.php?page=sec_login", "¡Usuario Registrado Satisfactoriamente!");
                     }
-                } catch (Error $ex){
+                } catch (Exception $ex){
                     die($ex);
                 }
             }
         }
+
         $viewData = get_object_vars($this);
         \Views\Renderer::render("security/sigin", $viewData);
     }
 }
-?>
